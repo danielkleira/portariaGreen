@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -16,8 +17,9 @@ export class Boleto {
   @Column({ length: 255 })
   nome_sacado: string;
 
-  @ManyToOne(() => Lote, (lote) => lote.id)
-  id_lote: Lote;
+  @ManyToOne(() => Lote, { nullable: true })
+  @JoinColumn({ name: 'id_lote' })
+  id_lote: number | Lote;
 
   @Column({ default: true })
   ativo: boolean;
@@ -28,7 +30,7 @@ export class Boleto {
   @UpdateDateColumn()
   atualizado_em: Date;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'float' })
   valor: number;
 
   @Column({ length: 255, nullable: true })

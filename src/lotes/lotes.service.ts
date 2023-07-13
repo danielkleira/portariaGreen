@@ -10,11 +10,8 @@ export class LotesService {
     @InjectRepository(Lote) private loteRepository: Repository<Lote>,
   ) {}
   async create(nome: string): Promise<Lote> {
-    console.log(nome);
     const lote = new Lote();
-    console.log(lote);
     lote.nome = nome;
-    console.log(lote);
     return this.loteRepository.save(lote);
   }
 
