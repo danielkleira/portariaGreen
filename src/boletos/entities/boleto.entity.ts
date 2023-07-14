@@ -18,8 +18,7 @@ export class Boleto {
   nome_sacado: string;
 
   @ManyToOne(() => Lote, { nullable: true })
-  @JoinColumn({ name: 'id_lote' })
-  id_lote: number | Lote;
+  id_lote: Lote;
 
   @Column({ default: true })
   ativo: boolean;
@@ -34,5 +33,5 @@ export class Boleto {
   valor: number;
 
   @Column({ length: 255, nullable: true })
-  linhaDigitavel: string;
+  linha_digitavel: string;
 }

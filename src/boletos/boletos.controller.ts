@@ -1,15 +1,15 @@
 import {
   Controller,
   Get,
+  Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { BoletosService } from './boletos.service';
 import { CreateBoletoDto } from './dto/create-boleto.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import * as csvParser from 'csv-parser';
-import * as fs from 'fs';
 import { diskStorage } from 'multer';
 import { Express } from 'express';
 
@@ -25,25 +25,36 @@ export class BoletosController {
       }),
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const filePath = file.path;
-    fs.createReadStream(filePath)
-      .pipe(csvParser())
-      .on('data', (row) => {
-        this.boletosService.create(
-          row['nome'],
-          row['unidade'],
-          row['valor'],
-          row['linha_digitavel'],
-        );
-      })
-      .on('end', () => {
-        fs.unlinkSync(filePath);
-      });
+  uploadCsv(@UploadedFile() file: Express.Multer.File) {
+    return this.boletosService.importCsv(file.path);
+  }
+
+  @Post('import/pdf/')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './uploads/pdf',
+      }),
+    }),
+  )
+  uploadPdf(@UploadedFile() file: Express.Multer.File) {
+    return this.boletosService.importPdf(file.path);
   }
 
   @Get()
-  findAll() {
-    return this.boletosService.findAll();
+  findBy(
+    @Query('nome') nome?: string,
+    @Query('valor_inicial') valorInicial?: number,
+    @Query('valor_final') valorFinal?: number,
+    @Query('id_lote') idLote?: number,
+    @Query('relatorio') relatorio?: number,
+  ) {
+    return this.boletosService.findBy(
+      nome,
+      valorInicial,
+      valorFinal,
+      idLote,
+      relatorio,
+    );
   }
 }
